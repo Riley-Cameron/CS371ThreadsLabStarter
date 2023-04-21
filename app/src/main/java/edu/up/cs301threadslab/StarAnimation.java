@@ -15,7 +15,7 @@ import java.util.Random;
 public class StarAnimation extends Animation {
 
     /* the field of stars */
-    public static final int INIT_STAR_COUNT = 100;
+    private int starCount = 100;
     private Vector<Star> field = new Vector<Star>();
 
     /* when this is set to 'false' the next animation frame won't twinkle */
@@ -33,7 +33,7 @@ public class StarAnimation extends Animation {
 
         //Create the stars
         field = new Vector<Star>();
-        for(int i = 0; i < INIT_STAR_COUNT; ++i) {
+        for(int i = 0; i < starCount; ++i) {
             addStar();
         }
     }
@@ -71,11 +71,23 @@ public class StarAnimation extends Animation {
         this.twinkle = true;
     }//draw
 
-    /** the seekbar progress specifies the brightnes of the stars. */
+    /** the seekbar progress specifies the number of stars. */
     @Override
     public void progressChange(int newProgress) {
-        int brightness = 255 - (newProgress * 2);
-        Star.starPaint.setColor(Color.rgb(brightness, brightness, brightness));
+        int newCount = (newProgress * 9) + 100;
+        int diff = newCount - starCount;
+
+        if (diff > 0) {
+            for (int i = 0; i < diff; i++) {
+                this.addStar();
+            }
+        } else if (diff < 0) {
+            for (int i = 0; i < Math.abs(diff); i++) {
+                this.removeStar();
+            }
+        }
+
+        starCount = starCount + diff;
         this.twinkle = false;
     }
 }//class StarAnimation
